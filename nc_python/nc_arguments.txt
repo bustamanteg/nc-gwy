@@ -1,0 +1,1 @@
+python3 nc_gwy.py '/data/20220916_run17/' 'killburn_r17_target076' 0.04 1 21000 172093

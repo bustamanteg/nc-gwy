@@ -1,0 +1,1 @@
+python3 nc_gwy.py '/data/20221024_run17/' 'killburn_r17_LiNi_1um_light_electrodes156' 0.07 5 25000 172941
