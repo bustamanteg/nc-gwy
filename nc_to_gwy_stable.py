@@ -5,19 +5,23 @@
 # The dissipation channel can be saved in units of eV/cycle or Hz. 
 # Change the user parameters to suit your needs. 
 
+#To do: 
 
+#Make an if to only save Diss_r (the excess dissipation with respect to the same image) or Diss_r0 (the excess dissipation with respect to a fixed value)
 
 #--------------------------
 #USER  PARAMETERS
 #edit the following for your file
 
-direct='/data/20230228_run18/'  #Directory where the data is stored
-prefix='run_18_LiNi_240'        #File prefix
-cantsens=0.051                  # V/nm Conversion factor of the deflection signal
+direct='/data/20231218_run24/'  #Directory where the data is stored
+prefix='r23_brockley_lini021'        #File prefix
+cantsens=0.006                  # V/nm Conversion factor of the deflection signal
 signalgain=1                    # Preamplifier signal gain.
-Q=25201                         # Cantilever Q factor
-f0=151708                       # Hz Resonance frequency of the cantilever
-
+Q=29329                         # Cantilever Q factor
+f0=155022                       # Hz Resonance frequency of the cantilever
+s_VHz=0.02# V/Hz                 # V/Hz Conversion factor from V to Hz in the frequency shift
+Diss0=3.8134                     # V Excitation amplitude when the sample forces are not present
+exc_avg=0                        # Calculate the excitation not due to the sample from the same scan? 0= no, 1=yes.
 #--------------------------
 #
 
@@ -39,14 +43,12 @@ def run(direct,prefix, cantsens, signalgain, Q, f0, ex_units="eV"):
     f0 = res freq
     exc_units=output units for the excitation (dissipation) channel. 
     '''
-    #direct = '/data/20220922_run17'
-    #prefix = 'killburn_r17_offtarget_kpfm038'
-    # Make sure sensitvity is correct
-    #cantsens = 0.120*5
+ 
     fileprefix = direct+prefix
     w0 = f0*2*np.pi
     
-    def botqrtavg(nums):
+    def botqrtavg(nums): 
+        # This function takes the mean of the middle range of the data given
         out = np.sort(nums.flatten())[int(0.02*len(nums)*len(nums[0])):int(0.05*len(nums)*len(nums[0]))].mean()
         return out
     
@@ -104,24 +106,25 @@ def run(direct,prefix, cantsens, signalgain, Q, f0, ex_units="eV"):
     Topo_r = datapull(fileprefix+'-M-Xp-Topo.nc',1e-10) #ang to m scale factor
     Topo_l = datapull(fileprefix+'-Xm-Topo.nc',1e-10)
     
-    Freq_r = datapull(fileprefix+'-Xp-ADC1.nc',-1/0.002) # Labone gain scaling
-    Freq_l = datapull(fileprefix+'-Xm-ADC1.nc',-1/0.002)
+    Freq_r = datapull(fileprefix+'-Xp-ADC1.nc',-1/s_VHz) # Frequency shift divided by the conversion factor Df (V)/s_V/Hz=Df(Hz)Labone gain scaling
+    Freq_l = datapull(fileprefix+'-Xm-ADC1.nc',-1/s_VHz)
     
     Amp_r = datapull(fileprefix+'-Xp-ADC4.nc',1e-10/cantsens/signalgain) #V to nm to m, potential amplifier, labone gain of 10
     Amp_l = datapull(fileprefix+'-Xm-ADC4.nc',1e-10/cantsens/signalgain)
     
     #printing some characteristics of the amplitude
-    print(type(Amp_l))
-    print(np.size(Amp_l))
+    print('the amplitude type is',type(Amp_l))
+    print('the amplitude size is',np.size(Amp_l))
     print('botqrtavg(Amp_l)',botqrtavg(Amp_l))
 
+    #Dissipation ------------------------------------------------------------------------------------------------------------------------
     #dissipation before converting
     Diss_r = datapull(fileprefix+'-Xp-ADC2.nc',1)
-    print('average dissipation right',botqrtavg(Diss_r))
+    print('average excitation amplitude right',botqrtavg(Diss_r))
     Diss_l = datapull(fileprefix+'-Xm-ADC2.nc',1)
-    print('average dissipation left', botqrtavg(Diss_l))
+    print('average excitation amplitude left', botqrtavg(Diss_l))
     
-    #Saving a separate channel to save excitation in V     
+    #Creating a copy of the excitaion amplitude in V save excitation in V     
     Diss_rV=Diss_r
     Diss_lV=Diss_l
     print(' ')
@@ -133,13 +136,13 @@ def run(direct,prefix, cantsens, signalgain, Q, f0, ex_units="eV"):
     if ex_units=="Hz":
          #frac difference scaling
         
-        Diss_r = (Diss_r/botqrtavg(Diss_r)-1)*w0/Q
+        Diss_r = (Diss_r/botqrtavg(Diss_r)-1)*w0/Q  # only valid when most of the image has a baseline dissipation, eg. rings on nanoparticles
 
-        Diss_l = (Diss_l/botqrtavg(Diss_l)-1)*w0/Q
+        Diss_l = (Diss_l/botqrtavg(Diss_l)-1)*w0/Q  # only valid when most of the image has a baseline dissipation, eg. rings on nanoparticles
 
-        Diss_r0 = (Diss_r/Diss0-1)*w0/Q
+        Diss_r0 = (Diss_r/Diss0-1)*w0/Q             # Dissipation in Hz using Diss0, which is the dissipation when the sample is not present. Valid if Diss0 is correct. 
 
-        Diss_l0 = (Diss_l/Diss0-1)*w0/Q
+        Diss_l0 = (Diss_l/Diss0-1)*w0/Q             # # Dissipation in Hz using Diss0, which is the dissipation when the sample is not present. Valid if Diss0 is correct. 
     
     if ex_units=="eV": 
         
@@ -164,12 +167,11 @@ Springer, hardcover ed., 7 2002.
 
         print('E0=',E0_J,'[J]')
         print('E0=',E0_eV,'[eV]')
-        Diss0=0.772 # V, from the comments of the scan it  is the dissipation at 0V, far away. 
+        #Diss0=0.772 # V, from the comments of the scan it  is the dissipation at 0V, far away. 
 
 
         #calculating the dissipation as the average of the center of the values of the image
         Diss_r = (Diss_r/botqrtavg(Diss_r)-1)*E0_eV
-
         Diss_l = (Diss_l/botqrtavg(Diss_l)-1)*E0_eV
 
         # Calculate the dissipation with respect to the dissipation far away
@@ -219,15 +221,15 @@ Springer, hardcover ed., 7 2002.
 
 #---------------------------------------
 # Ifs for dissipation units
-    if ex_units=='Hz':
-
+    if ex_units=='Hz':  
+        #dissipation with respect the the average of the image (excluding outliers, rings)
         obj['/4/data/title'] = 'Dissipation ->'
         obj['/4/data'] = GwyDataField(Diss_r, xreal=xrange, yreal=yrange, xoff=xoff, yoff=yoff, si_unit_xy='m',si_unit_z='Hz')
         obj['/5/data/title'] = 'Dissipation <-'
         obj['/5/data'] = GwyDataField(Diss_l, xreal=xrange, yreal=yrange, xoff=xoff, yoff=yoff, si_unit_xy='m',si_unit_z='Hz')
 
     if ex_units=='eV':
-
+        #dissipation with respect the the average of the image (excluding outliers, rings)
         obj['/4/data/title'] = 'Dissipation ->'
         obj['/4/data'] = GwyDataField(Diss_r, xreal=xrange, yreal=yrange, xoff=xoff, yoff=yoff, si_unit_xy='m',si_unit_z='eV/cycle')
         obj['/5/data/title'] = 'Dissipation <-'
@@ -264,7 +266,7 @@ Springer, hardcover ed., 7 2002.
     #saving the dissipation Diss_i0 with i=r,l to a channel
     
     if ex_units=='Hz':
-
+        #Excitacion with respect to an excitation far away from the sample Diss0, manually entered
         obj['/14/data/title'] = 'Excitation normalized ->'
         obj['/14/data'] = GwyDataField(Diss_r0, xreal=xrange, yreal=yrange, xoff=xoff, yoff=yoff, si_unit_xy='m',si_unit_z='Hz')
         obj['/15/data/title'] = 'Excitation normalized <-'
