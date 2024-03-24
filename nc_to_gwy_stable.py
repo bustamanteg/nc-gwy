@@ -25,6 +25,7 @@ from netCDF4 import Dataset
 from gwyfile.objects import GwyContainer, GwyDataField
 import numpy as np
 import fire
+import os
 
 
 
@@ -295,9 +296,19 @@ Springer, hardcover ed., 7 2002.
     Lab one gains
     Freq shift
     '''
-    
-    obj.tofile(direct+'scans/tests/'+prefix+ex_units+'.gwy')
+    #Check if the directory to save the new file exists and if not create one
+    dir_to_save = direct+"converted_to_gwy"
+
+    if os.path.isdir(dir_to_save):
+        print(f"{dir_to_save} exists.")
+    else:
+        print(f"{dir_to_save} does not exist. Creating it. ")
+        os.mkdir(dir_to_save)
 
 
 
-run(direct,prefix, cantsens, signalgain, Q, f0,"eV")
+    obj.tofile(dir_to_save+'/'+prefix+ex_units+'.gwy')
+
+
+
+run(direct, prefix, cantsens, signalgain, Q, f0,"eV")
