@@ -2,6 +2,9 @@
 # -*- coding: utf-8 -*-
 """
 Created on Tue Apr  5 14:22:35 2022
+this file is located /home/jose/coding/nc-gwy/nc_python
+This file takes explicitly the Q factor and the resonace frequency f0 into the function 
+run. 
 
 @author: lfairgrievepark12
 

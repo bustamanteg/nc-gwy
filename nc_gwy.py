@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """
 Created on Tue Apr  5 14:22:35 2022
+This file is located at /home/jose/coding/nc-gwy
+
 
 @author: lfairgrievepark12
 
