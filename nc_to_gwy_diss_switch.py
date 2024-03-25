@@ -13,15 +13,17 @@ This code creates the following channels:
 2. Frequency shift (right)
 3. Frequency shift (left)
 4. Excitation amplitude (right) [V]            Voltage Amplitude aplied to the excitation system to mantain a constant oscillation of the cantilever. 
-5. Excitation amplitude (left)  [V]
-6. Amplitude (right)  Oscillation amplitude nm
-7. Amplitude (left )  Oscillation amplitude nm
-8. 1 \omega amplitude  (right) If the voltage applied is modulated, this is the amplitude of the first sideband
-10. 1 \omega amplitude (left)
-11. PID Phase right 
-12. PID Phase (left)
-13. Excess excitation (right)  [Hz] or [eV]    Either by calculating the mean excitation amplitude of the scan without outliers A0_avg=1, or manually entered in the parameter Diss0 (A0_avg=0) 
-14. Excess excitation (left)    [Hz] of [eV]    ''
+5. Excitation amplitude (left)  [V]             ''
+6. Amplitude (right)                            Oscillation amplitude nm  
+7. Amplitude (left )                            Oscillation amplitude nm
+8. 1w amplitude  (right)                  If the voltage applied is modulated with an AC voltage V(t)=Aac*sin(wt) , an amplitude A_1w appears at f0+w/2pi
+9. 1w amplitude (left)                   ''
+10. 2w  amplitude
+11. 2w  amplitude
+12. PID Phase right 
+13. PID Phase (left)
+14. Excess excitation (right)  [Hz] or [eV]    Either by calculating the mean excitation amplitude of the scan without outliers A0_avg=1, or manually entered in the parameter Diss0 (A0_avg=0) 
+15. Excess excitation (left)    [Hz] of [eV]    ''
 
 
 E0_J=np.pi*A**2*k/Q
