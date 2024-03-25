@@ -14,13 +14,13 @@
 #edit the following for your file
 
 direct='/data/20231218_run24/'  #Directory where the data is stored
-prefix='r23_brockley_lini021'        #File prefix
+prefix='r23_brockley_lini024'        #File prefix
 cantsens=0.006                  # V/nm Conversion factor of the deflection signal
 signalgain=1                    # Preamplifier signal gain.
 Q=29329                         # Cantilever Q factor
 f0=155022                       # Hz Resonance frequency of the cantilever
 s_VHz=0.02# V/Hz                 # V/Hz Conversion factor from V to Hz in the frequency shift
-Diss0=3.8134                     # V Excitation amplitude when the sample forces are not present
+Diss0=3.354                   # V Excitation amplitude when the sample forces are not present
 exc_avg=0                        # Calculate the excitation not due to the sample from the same scan? 0= no, 1=yes.
 #--------------------------
 #
@@ -119,17 +119,17 @@ def run(direct,prefix, cantsens, signalgain, Q, f0, ex_units="eV"):
 
     #Dissipation ------------------------------------------------------------------------------------------------------------------------
     #dissipation before converting
-    Diss_r = datapull(fileprefix+'-Xp-ADC2.nc',1)
-    print('average excitation amplitude right',botqrtavg(Diss_r))
-    Diss_l = datapull(fileprefix+'-Xm-ADC2.nc',1)
-    print('average excitation amplitude left', botqrtavg(Diss_l))
+    Exc_rV = datapull(fileprefix+'-Xp-ADC2.nc',1)                   #Excitation amplitude in V, trace
+    print('average excitation amplitude right',botqrtavg(Exc_rV), "[V]")   #Excitation amplitude in V, retrace
+    Exc_lV = datapull(fileprefix+'-Xm-ADC2.nc',1)
+    print('average excitation amplitude left', botqrtavg(Exc_lV), "[V]")
     
     #Creating a copy of the excitaion amplitude in V save excitation in V     
-    Diss_rV=Diss_r
-    Diss_lV=Diss_l
+    Diss_r=Exc_rV
+    Diss_l=Exc_lV
     print(' ')
-    print('Average value of dissipation in V',botqrtavg((Diss_rV+Diss_lV)/2) )
-    #print('Average value of dissipation in V',botqrtavg((Diss_rV+Diss_lV))/2 )
+    print('Average value of dissipation in V',botqrtavg((Exc_rV+Exc_lV)/2) )
+    #print('Average value of dissipation in V',botqrtavg((Exc_rV+Exc_lV))/2 )
     
 
 
@@ -140,9 +140,9 @@ def run(direct,prefix, cantsens, signalgain, Q, f0, ex_units="eV"):
 
         Diss_l = (Diss_l/botqrtavg(Diss_l)-1)*w0/Q  # only valid when most of the image has a baseline dissipation, eg. rings on nanoparticles
 
-        Diss_r0 = (Diss_r/Diss0-1)*w0/Q             # Dissipation in Hz using Diss0, which is the dissipation when the sample is not present. Valid if Diss0 is correct. 
+        Diss_r0 = (Exc_rV/Diss0-1)*w0/Q             # Dissipation in Hz using Diss0, which is the dissipation when the sample is not present. Valid if Diss0 is correct. 
 
-        Diss_l0 = (Diss_l/Diss0-1)*w0/Q             # # Dissipation in Hz using Diss0, which is the dissipation when the sample is not present. Valid if Diss0 is correct. 
+        Diss_l0 = (Exc_lV/Diss0-1)*w0/Q             # # Dissipation in Hz using Diss0, which is the dissipation when the sample is not present. Valid if Diss0 is correct. 
     
     if ex_units=="eV": 
         
@@ -177,11 +177,24 @@ Springer, hardcover ed., 7 2002.
         # Calculate the dissipation with respect to the dissipation far away
 
         # This is the dissipation as defined in the ncafm book
-        Diss_r0 = (Diss_r/Diss0-1)*E0_eV
+        Diss_r0 = (Exc_rV/Diss0-1)*E0_eV
 
-        Diss_l0 = (Diss_l/Diss0-1)*E0_eV
+        Diss_l0 = (Exc_lV/Diss0-1)*E0_eV
 
+        print(' ')
+        print('disect the operation')
+        print("print some values of Diss_r0[10,10]", Diss_r0[10,10],"[eV]")
+        print(" the original excitation amplitude", Exc_rV[10,10])
+        print("Diss0=",Diss0)
+        Diss_r0_1010 = (Exc_rV[10,10]/Diss0-1)*E0_eV
+        print("E0_eV",E0_eV)
+       
+      
         
+        print("(Exc_rV[10,10]/Diss0)", (Exc_rV[10,10]/Diss0))
+        print("(Exc_rV[10,10]/Diss0-1)",(Exc_rV[10,10]/Diss0-1))
+        print("(Exc_rV[10,10]/Diss0-1)*E0_eV", (Exc_rV[10,10]/Diss0-1)*E0_eV)
+        print("Diss_r0[10,10]",Diss_r0[10,10])
 
         #using the dissipation measured far away from the sample with vias=0V
         
@@ -259,9 +272,9 @@ Springer, hardcover ed., 7 2002.
     #original excitation amplitude
 
     obj['/12/data/title'] = 'Excitation amplitude ->'
-    obj['/12/data'] = GwyDataField(Diss_rV, xreal=xrange, yreal=yrange, xoff=xoff, yoff=yoff, si_unit_xy='m',si_unit_z='V')
+    obj['/12/data'] = GwyDataField(Exc_rV, xreal=xrange, yreal=yrange, xoff=xoff, yoff=yoff, si_unit_xy='m',si_unit_z='V')
     obj['/13/data/title'] = 'Excitation amplitude <-'
-    obj['/13/data'] = GwyDataField(Diss_lV, xreal=xrange, yreal=yrange, xoff=xoff, yoff=yoff, si_unit_xy='m',si_unit_z='V')
+    obj['/13/data'] = GwyDataField(Exc_lV, xreal=xrange, yreal=yrange, xoff=xoff, yoff=yoff, si_unit_xy='m',si_unit_z='V')
 
     #saving the dissipation Diss_i0 with i=r,l to a channel
     
