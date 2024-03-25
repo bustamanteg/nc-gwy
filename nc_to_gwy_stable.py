@@ -181,20 +181,6 @@ Springer, hardcover ed., 7 2002.
 
         Diss_l0 = (Exc_lV/Diss0-1)*E0_eV
 
-        print(' ')
-        print('disect the operation')
-        print("print some values of Diss_r0[10,10]", Diss_r0[10,10],"[eV]")
-        print(" the original excitation amplitude", Exc_rV[10,10])
-        print("Diss0=",Diss0)
-        Diss_r0_1010 = (Exc_rV[10,10]/Diss0-1)*E0_eV
-        print("E0_eV",E0_eV)
-       
-      
-        
-        print("(Exc_rV[10,10]/Diss0)", (Exc_rV[10,10]/Diss0))
-        print("(Exc_rV[10,10]/Diss0-1)",(Exc_rV[10,10]/Diss0-1))
-        print("(Exc_rV[10,10]/Diss0-1)*E0_eV", (Exc_rV[10,10]/Diss0-1)*E0_eV)
-        print("Diss_r0[10,10]",Diss_r0[10,10])
 
         #using the dissipation measured far away from the sample with vias=0V
         
