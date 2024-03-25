@@ -262,11 +262,18 @@ def run(direct,prefix, cantsens, signalgain, Q, f0, ex_units="eV"):
     obj['/9/data/title']=' Amplitude 1w ->'
     obj['/9/data']=GwyDataField(A1w_l, xreal=xrange, yreal=yrange, xoff=xoff, yoff=yoff, si_unit_xy='m',si_unit_z='V')
 
-    obj['/10/data/title'] = 'PID Phase ->'
-    obj['/10/data'] = GwyDataField(Phase_r, xreal=xrange, yreal=yrange, xoff=xoff, yoff=yoff, si_unit_xy='m',si_unit_z='deg')
+    obj['/10/data/title']=' Amplitude 2w <-'
+    obj['/10/data']=GwyDataField(A2w_r, xreal=xrange, yreal=yrange, xoff=xoff, yoff=yoff, si_unit_xy='m',si_unit_z='V')
+
+    obj['/11/data/title']=' Amplitude 2w ->'
+    obj['/11/data']=GwyDataField(A2w_l, xreal=xrange, yreal=yrange, xoff=xoff, yoff=yoff, si_unit_xy='m',si_unit_z='V')
+
+
+    obj['/12/data/title'] = 'PID Phase ->'
+    obj['/12/data'] = GwyDataField(Phase_r, xreal=xrange, yreal=yrange, xoff=xoff, yoff=yoff, si_unit_xy='m',si_unit_z='deg')
  
-    obj['/11/data/title'] = 'PID Phase <-'
-    obj['/11/data'] = GwyDataField(Phase_l, xreal=xrange, yreal=yrange, xoff=xoff, yoff=yoff, si_unit_xy='m',si_unit_z='deg')
+    obj['/13/data/title'] = 'PID Phase <-'
+    obj['/13/data'] = GwyDataField(Phase_l, xreal=xrange, yreal=yrange, xoff=xoff, yoff=yoff, si_unit_xy='m',si_unit_z='deg')
     
 
     #saving the dissipation Diss_i0 with i=r,l to a channel
@@ -277,33 +284,33 @@ def run(direct,prefix, cantsens, signalgain, Q, f0, ex_units="eV"):
     # Ifs for dissipation units
         if ex_units=='Hz':  
             #dissipation with respect the the average of the image (excluding outliers, rings)
-            obj['/12/data/title'] = 'Excess excitation ->'
-            obj['/12/data'] = GwyDataField(Diss_r, xreal=xrange, yreal=yrange, xoff=xoff, yoff=yoff, si_unit_xy='m',si_unit_z='Hz')
-            obj['/13/data/title'] = 'Excess excitation  <-'
-            obj['/13/data'] = GwyDataField(Diss_l, xreal=xrange, yreal=yrange, xoff=xoff, yoff=yoff, si_unit_xy='m',si_unit_z='Hz')
+            obj['/14/data/title'] = 'Excess excitation ->'
+            obj['/14/data'] = GwyDataField(Diss_r, xreal=xrange, yreal=yrange, xoff=xoff, yoff=yoff, si_unit_xy='m',si_unit_z='Hz')
+            obj['/15/data/title'] = 'Excess excitation  <-'
+            obj['/15/data'] = GwyDataField(Diss_l, xreal=xrange, yreal=yrange, xoff=xoff, yoff=yoff, si_unit_xy='m',si_unit_z='Hz')
 
         if ex_units=='eV':
             #dissipation with respect the the average of the image (excluding outliers, rings)
-            obj['/12/data/title'] = 'Excess excitation ->'
-            obj['/12/data'] = GwyDataField(Diss_r, xreal=xrange, yreal=yrange, xoff=xoff, yoff=yoff, si_unit_xy='m',si_unit_z='eV/cycle')
-            obj['/13/data/title'] = 'Excess excitation  <-'
-            obj['/13/data'] = GwyDataField(Diss_l, xreal=xrange, yreal=yrange, xoff=xoff, yoff=yoff, si_unit_xy='m',si_unit_z='eV/cycle')
+            obj['/14/data/title'] = 'Excess excitation ->'
+            obj['/14/data'] = GwyDataField(Diss_r, xreal=xrange, yreal=yrange, xoff=xoff, yoff=yoff, si_unit_xy='m',si_unit_z='eV/cycle')
+            obj['/15/data/title'] = 'Excess excitation  <-'
+            obj['/15/data'] = GwyDataField(Diss_l, xreal=xrange, yreal=yrange, xoff=xoff, yoff=yoff, si_unit_xy='m',si_unit_z='eV/cycle')
         # ----------------------------------------
     elif A0_avg==0:
         
         if ex_units=='Hz':
             #Excitacion with respect to an excitation far away from the sample Diss0, manually entered
-            obj['/12/data/title'] = 'Excess excitation ->'
-            obj['/12/data'] = GwyDataField(Diss_r0, xreal=xrange, yreal=yrange, xoff=xoff, yoff=yoff, si_unit_xy='m',si_unit_z='Hz')
-            obj['/13/data/title'] = 'Excess excitation <-'
-            obj['/13/data'] = GwyDataField(Diss_l0, xreal=xrange, yreal=yrange, xoff=xoff, yoff=yoff, si_unit_xy='m',si_unit_z='Hz')
+            obj['/14/data/title'] = 'Excess excitation ->'
+            obj['/14/data'] = GwyDataField(Diss_r0, xreal=xrange, yreal=yrange, xoff=xoff, yoff=yoff, si_unit_xy='m',si_unit_z='Hz')
+            obj['/15/data/title'] = 'Excess excitation <-'
+            obj['/15/data'] = GwyDataField(Diss_l0, xreal=xrange, yreal=yrange, xoff=xoff, yoff=yoff, si_unit_xy='m',si_unit_z='Hz')
 
         if ex_units=='eV':
 
-            obj['/12/data/title'] = 'Excess excitation ->'
-            obj['/12/data'] = GwyDataField(Diss_r0, xreal=xrange, yreal=yrange, xoff=xoff, yoff=yoff, si_unit_xy='m',si_unit_z='eV/cycle')
-            obj['/13/data/title'] = 'Excess excitation <-'
-            obj['/13/data'] = GwyDataField(Diss_l0, xreal=xrange, yreal=yrange, xoff=xoff, yoff=yoff, si_unit_xy='m',si_unit_z='eV/cycle')
+            obj['/14/data/title'] = 'Excess excitation ->'
+            obj['/14/data'] = GwyDataField(Diss_r0, xreal=xrange, yreal=yrange, xoff=xoff, yoff=yoff, si_unit_xy='m',si_unit_z='eV/cycle')
+            obj['/15/data/title'] = 'Excess excitation <-'
+            obj['/15/data'] = GwyDataField(Diss_l0, xreal=xrange, yreal=yrange, xoff=xoff, yoff=yoff, si_unit_xy='m',si_unit_z='eV/cycle')
 
     # Populating metadat field
     for i in range(0,10):
