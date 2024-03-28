@@ -224,9 +224,8 @@ def run(direct,prefix, cantsens, signalgain, Q, f0, ex_units="eV"):
     A2w_r=datapull(fileprefix+'-Xp-ADC6.nc',1/10000) # two omega amplitude
     A2w_l=datapull(fileprefix+'-Xm-ADC6.nc',1/10000)
 
-    Phase_r = datapull(fileprefix+'-Xp-ADC7.nc',1/0.01) # Labone scalign
-    Phase_l = datapull(fileprefix+'-Xm-ADC7.nc',1/0.01)
-  
+    Phase_r = datapull(fileprefix+'-Xp-ADC0mITunnel.nc',1/0.01) # Labone scalign
+    Phase_l = datapull(fileprefix+'-Xm-ADC0mITunnel.nc',1/0.01)
   
 
     (xrange, yrange, xoff, yoff) = rangepull(fileprefix+'-M-Xp-Topo.nc')
