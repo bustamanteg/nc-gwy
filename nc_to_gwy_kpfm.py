@@ -43,13 +43,13 @@ E0_eV=E0_J/1.602e-19
 #edit the following for your file
 
 direct='/data/20231218_run24/'  #Directory where the data is stored
-prefix='r23_brockley_lini055'        #File prefix
+prefix='r23_brockley_lini041'        #File prefix
 cantsens=0.006                  # V/nm Conversion factor of the deflection signal
 signalgain=1                    # Preamplifier signal gain.
 Q=29329                         # Cantilever Q factor
 f0=155022                       # Hz Resonance frequency of the cantilever
-s_VHz=0.02# V/Hz                 # V/Hz Conversion factor from V to Hz in the frequency shift
-Diss0=2.58                   # V Excitation amplitude when the sample forces are not present
+s_VHz=0.02# V/Hz                # V/Hz Conversion factor from V to Hz in the frequency shift
+Diss0=3.273                     # V Excitation amplitude when the sample forces are not present
 A0_avg=0                        # Calculate the excitation A_0 from the same scan? 0= no, 1=yes.
 ex_units='eV'
 #--------------------------
@@ -356,7 +356,7 @@ def run(direct,prefix, cantsens, signalgain, Q, f0, ex_units="eV"):
 
 
 
-    obj.tofile(dir_to_save+'/'+prefix+ex_units+'kpfm.gwy')
+    obj.tofile(dir_to_save+'/'+prefix+ex_units+'Diss03.273.gwy')
 
 
 
