@@ -43,7 +43,7 @@ E0_eV=E0_J/1.602e-19
 #edit the following for your file
 
 direct='/data/20231218_run24/'  #Directory where the data is stored
-prefix='r23_brockley_lini024'        #File prefix
+prefix='r23_brockley_lini032'        #File prefix
 cantsens=0.006                  # V/nm Conversion factor of the deflection signal
 signalgain=1                    # Preamplifier signal gain.
 Q=29329                         # Cantilever Q factor
