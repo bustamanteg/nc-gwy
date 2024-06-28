@@ -3,6 +3,11 @@
 
 # Code that converts scans in the nc format, produced by gxsm to gwy format. Each channel is saved in the same file. 
 '''
+Script created for kpfm scans. 
+The script takes all the files with the "prefix" and converts it into a single .gwy file. 
+It also, produces a .txt report, and copies itself into the data output directory for future reference. 
+
+
 This code creates the following channels: 
 
 
@@ -55,6 +60,7 @@ A0_avg=0                        # Calculate the excitation A_0 from the same sca
 ex_units='eV'
 Amanual=11e-9/2 #m              # Amplitude of oscillation in m, manually written here
 write_report=1                  #1 write a report on a textfile 0, do nothing. 
+save_script=1
 #--------------------------
 #
 
@@ -64,7 +70,7 @@ import numpy as np
 import fire
 import os
 from datetime import date,datetime
-
+import shutil
 
 def run(direct,prefix, cantsens, signalgain, Q, f0, ex_units="eV"):
     '''
@@ -391,12 +397,19 @@ def run(direct,prefix, cantsens, signalgain, Q, f0, ex_units="eV"):
             "f0=",str(f0)+" Hz\n",
             "Conversion factor from V to Hz in the frequency shift s_VHz =",str(s_VHz)+" V/Hz \n"               
             "Excitation amplitude with no tip sample interaction:"+str(Diss0)+" V\n",                    
-            "Excitation amplitude calculated from scan:",str(bool(A0_avg))+"\n",                   
+            "Excitation amplitude calculated from scan:",str(bool(A0_avg))+"\n",
+            "Script saved:", str(bool(save_script))+"\n",
+            "End of report\n",                   
 
 
             ]
             file.writelines(text_towrite)
+            print("Report created \n\n")
             file.close()
+
+            if save_script: 
+                shutil.copy(__file__, dir_to_save)
+                print("Script saved. ")
 
 
     obj.tofile(dir_to_save+'/'+prefix+ex_units+'A0_'+str(Diss0)+'.gwy')

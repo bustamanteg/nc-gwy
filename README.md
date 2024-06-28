@@ -6,9 +6,12 @@ Code originally written by Logan Fairgrieve-Park
 Description of the scripts: 
 
 
-nc_to_gwy_kpfm.py
+# nc_to_gwy_kpfm.py
 
 Script created for kpfm scans. 
+The script takes all the files with the "prefix" and converts it into a single .gwy file. 
+It also, produces a .txt report, and copies itself into the data output directory for future reference. 
+
 
 This script reads several nc files and  creates the following channels: 
 
