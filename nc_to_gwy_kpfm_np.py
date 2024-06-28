@@ -3,6 +3,8 @@
 
 # Code that converts scans in the nc format, produced by gxsm to gwy format. Each channel is saved in the same file. 
 '''
+This script saves the output in a new directory, it creates a new directory each day. 
+
 This code creates the following channels: 
 
 
@@ -45,14 +47,15 @@ E0_eV=E0_J/1.602e-19
 
 direct='/data/20230516_run19/'  #Directory where the data is stored
 prefix='r19_AuNP_LN163'        #File prefix
-cantsens=0.018                  # V/nm Conversion factor of the deflection signal
+cantsens=0.05                  # V/nm Conversion factor of the deflection signal
 signalgain=1                    # Preamplifier signal gain.
 Q=42000                         # Cantilever Q factor
 f0=153507.7                       # Hz Resonance frequency of the cantilever
 s_VHz=0.02# V/Hz                # V/Hz Conversion factor from V to Hz in the frequency shift
 Diss0=1.34                     # V Excitation amplitude when the sample forces are not present
-A0_avg=0                        # Calculate the excitation A_0 from the same scan? 0= no, 1=yes.
-ex_units='eV'
+A0_avg=0                        # Calculate the excitation A_0  as the average of the image, excluding outlayers? 1=yes. 0= no, use the manually provided Diss0. 
+ex_units='eV'                   # ex_units=eV, to save excitation data in eV/cycle. 
+Amanual=4.76e-9/2               #m Amplitude of oscillation. Beware, we normally write the peak to peak amplitude.         
 #--------------------------
 #
 
@@ -61,7 +64,7 @@ from gwyfile.objects import GwyContainer, GwyDataField
 import numpy as np
 import fire
 import os
-
+from datetime import date
 
 
 def run(direct,prefix, cantsens, signalgain, Q, f0, ex_units="eV"):
@@ -186,7 +189,7 @@ def run(direct,prefix, cantsens, signalgain, Q, f0, ex_units="eV"):
         L. Fairgireve-Park thesis eq. 2.7, 2.8
         '''
         k=40 # [N/m]
-        Amanual=4.5e-9 #m
+        #Amanual=4.5e-9 #m
         print('Amplitude from comments',Amanual)
         A_from_scan=1/2*(botqrtavg(Amp_r)+botqrtavg(Amp_l)) #nm
         print('A_from_scan',A_from_scan) 
@@ -347,7 +350,10 @@ def run(direct,prefix, cantsens, signalgain, Q, f0, ex_units="eV"):
     Freq shift
     '''
     #Check if the directory to save the new file exists and if not create one
-    dir_to_save = direct+"converted_to_gwy"
+    today=date.today()
+    today_str = today.strftime("%Y%m%d")
+    dir_to_save = direct+"converted_to_gwy_dev"+today_str
+    print("Saving to the directory:"+dir_to_save)
 
     if os.path.isdir(dir_to_save):
         print(f"{dir_to_save} exists.")

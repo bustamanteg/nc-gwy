@@ -53,6 +53,8 @@ s_VHz=0.02# V/Hz                # V/Hz Conversion factor from V to Hz in the fre
 Diss0=3.354                     # V Excitation amplitude when the sample forces are not present
 A0_avg=0                        # Calculate the excitation A_0 from the same scan? 0= no, 1=yes.
 ex_units='eV'
+Amanual=11e-9/2 #m              # Amplitude of oscillation in m, manually written here
+write_report=1                  #1 write a report on a textfile 0, do nothing. 
 #--------------------------
 #
 
@@ -61,7 +63,7 @@ from gwyfile.objects import GwyContainer, GwyDataField
 import numpy as np
 import fire
 import os
-
+from datetime import date,datetime
 
 
 def run(direct,prefix, cantsens, signalgain, Q, f0, ex_units="eV"):
@@ -142,7 +144,8 @@ def run(direct,prefix, cantsens, signalgain, Q, f0, ex_units="eV"):
     
     Amp_r = datapull(fileprefix+'-Xp-ADC4.nc',1e-10/cantsens/signalgain) #V to nm to m, potential amplifier, labone gain of 10
     Amp_l = datapull(fileprefix+'-Xm-ADC4.nc',1e-10/cantsens/signalgain)
-    
+    Ampl_l_test=datapull(fileprefix+'-Xp-ADC4.nc',1e-10/cantsens/signalgain)
+
     #printing some characteristics of the amplitude
     print('the amplitude type is',type(Amp_l))
     print('the amplitude size is',np.size(Amp_l))
@@ -179,20 +182,29 @@ def run(direct,prefix, cantsens, signalgain, Q, f0, ex_units="eV"):
         
         '''
         # Dissipation units in eV 
-        Ecuation 2.27, pg 26 in 
+        Equation 2.27, pg 26 in 
         S. Morita, R. Wiesendanger, and E. Meyer, eds., Noncontact Atomic Force Microscopy.
         Springer, hardcover ed., 7 2002.
 
         L. Fairgireve-Park thesis eq. 2.7, 2.8
         '''
+        #Determining amplitude
+        if A0_avg==0:
+            A=Amanual
+        else:  
+            A=A_from_scan
+
+        
+
+
         k=40 # [N/m]
-        Amanual=4.5e-9 #m
-        print('Amplitude from comments',Amanual)
+        #Amanual=4.5e-9 #m
+        print('Amplitude from user input',Amanual)
         A_from_scan=1/2*(botqrtavg(Amp_r)+botqrtavg(Amp_l)) #nm
         print('A_from_scan',A_from_scan) 
 
 
-        A=A_from_scan
+        #A=A_from_scan
         E0_J=np.pi*A**2*k/Q
         E0_eV=E0_J/1.602e-19
 
@@ -332,7 +344,7 @@ def run(direct,prefix, cantsens, signalgain, Q, f0, ex_units="eV"):
         obj['/'+str(i)+'/meta'] = meta
         
     # Making trace for each channel visible on file load
-    for i in [0,2,4,6,8,10]:
+    for i in [0,2,4,6,8,10,14,16]:
         obj['/'+str(i)+'/data/visible'] = True
     
     
@@ -347,14 +359,44 @@ def run(direct,prefix, cantsens, signalgain, Q, f0, ex_units="eV"):
     Freq shift
     '''
     #Check if the directory to save the new file exists and if not create one
-    dir_to_save = direct+"converted_to_gwy"
-
+    today=date.today()
+    today_str = today.strftime("%Y%m%d")
+    now=datetime.now()
+    now_str=now.strftime("%Y%m%d_%H%M%S")
+    dir_to_save = direct+"converted_to_gwy_dev/"+prefix+"/"+now_str+"/"
+    
+    
     if os.path.isdir(dir_to_save):
         print(f"{dir_to_save} exists.")
     else:
         print(f"{dir_to_save} does not exist. Creating it. ")
-        os.mkdir(dir_to_save)
+        os.makedirs(dir_to_save)
 
+    # write a textfile with the report
+    if write_report:
+        with open(dir_to_save+"/"+prefix+'_report.txt', 'w') as file:
+            text_towrite=["Report on the analysis performed on: ",now_str,
+            "on the set of files with this prefix:",prefix+"\n",
+            "data retreived from directory ",direct+'\n',
+            "Units for excitation:",ex_units+"\n",
+            
+            "Amplitude manually provided:",str(Amanual)+" m\n",
+            "spring constant :",str(k)+" N/m \n",
+            "Energy lost per cycle (no tip sample interaction)= Ecy=\n",str(E0_J),"J= ",str(E0_eV),"eV/cycle \n",
+            "\n\n User input:\n",
+            "cantsens = ",str(cantsens)+"\n",
+             "V/nm Conversion factor of the deflection signal=",str(cantsens)+" V/nm\n",                  
+            "Preamplifier signal gain = ",str(signalgain)+"\n",                   
+            "Q factor: ",str(Q)+"\n",                        # Cantilever Q factor
+            "f0=",str(f0)+" Hz\n",
+            "Conversion factor from V to Hz in the frequency shift s_VHz =",str(s_VHz)+" V/Hz \n"               
+            "Excitation amplitude with no tip sample interaction:"+str(Diss0)+" V\n",                    
+            "Excitation amplitude calculated from scan:",str(bool(A0_avg))+"\n",                   
+
+
+            ]
+            file.writelines(text_towrite)
+            file.close()
 
 
     obj.tofile(dir_to_save+'/'+prefix+ex_units+'A0_'+str(Diss0)+'.gwy')
